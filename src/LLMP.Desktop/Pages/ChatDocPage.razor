@@ -1,0 +1,170 @@
+﻿@page "/chat-doc-page"
+@inject AppState AppState
+@inject ISnackbar Snackbar
+@inject ChatDocService ChatSvc
+
+<h3>Chat with Document</h3>
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm>
+                
+                <MudTextField T="double" @bind-Value="@ChatSvc.MinRelevance" Label="Min Relevance" Required="true" RequiredError="Min Relevance is required!" />
+                <MudTextField T="string" Lines="20" @bind-Text="Prompt" Label="Your Prompt" Required="true" RequiredError="Prompt is required!" />
+            </MudForm>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Info" DisableElevation="true" OnClick="PickMedia" Class="mx-2">Upload File</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Success" DisableElevation="true" OnClick="Reset" Class="mx-2">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="Execute" Class="mx-2">Execute</MudButton>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Info ({infos.Count})")</MudText>
+            @foreach (var error in infos)
+            {
+                <MudText Color="@Color.Info">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="12">
+        @if (_isReceivingResponse)
+        {
+            <MudBadge Origin="Origin.TopLeft" Overlap="true" Color="Color.Secondary"
+                      Icon="@Icons.Material.Filled.Lightbulb" Class="full-width">
+                <MudPaper Class="pa-6" Elevation="3">
+                    <Loading />
+                </MudPaper>
+            </MudBadge>
+        }
+        <MudPaper Class="pa-4">
+            @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result))
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+@if (IsLoading)
+{
+    <MudGrid Justify="Justify.Center">
+        <MudItem xs="12" sm="12">
+            <MudText>Indexing File in progress...</MudText>
+            <MudProgressLinear Color="Color.Primary" Indeterminate="true" Class="my-7" />
+        </MudItem>
+    </MudGrid>
+  
+}
+@code {
+    string Status = string.Empty;
+    bool IsLoading = false;
+    bool _isReceivingResponse = false;
+    string Result;
+
+    List<string> infos = new();
+    string Prompt { set; get; } = "I want to go to ";
+    protected override async Task OnInitializedAsync()
+    { 
+        await Reset();
+    }
+
+    public async Task PickMedia()
+    {
+
+        if(IsLoading)return ;
+
+        IsLoading = true;
+        await Task.Delay(1);
+        try
+        {
+            int size = -1;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Title = "Open Document";
+            openFileDialog1.Filter = "docx files (*.docx)|*.docx|excel files (*.xlsx)|*.xlsx|pdf files (*.pdf)|*.pdf|text files (*.txt)|*.txt|csv files (*.csv)|*.csv";
+            var result = openFileDialog1.ShowDialog(); // Show the dialog.
+            if (result == System.Windows.Forms.DialogResult.OK) // Test result.
+            {
+                string file = openFileDialog1.FileName;
+                try
+                {
+                    await ChatSvc.ImportDoc(file);
+                    Snackbar.Add($"indexing document {Path.GetFileName(file)} is completed.", Severity.Success);
+                    infos.Add($"indexing document {Path.GetFileName(file)} is completed.");
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add($"indexing document {Path.GetFileName(file)} is failed. {ex}", Severity.Error);
+                    infos.Add($"indexing document {Path.GetFileName(file)} is failed. {ex}");
+                }
+            }
+            else
+            {
+                infos.Add("Only support pdf, docx, xlsx, txt, csv");
+            }
+            Console.WriteLine(size); // <-- Shows file size in debugging mode.
+            Console.WriteLine(result); // <-- For debugging use.
+
+
+
+
+        }
+        catch (Exception ex)
+        {
+            // The user canceled or something went wrong
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+    async Task Reset()
+    {
+        await ChatSvc.Setup();
+        Prompt = string.Empty;
+        Result = string.Empty;
+        infos.Add($"{DateTime.Now} - Chat is ready.");
+        Snackbar.Add($"{DateTime.Now} - Chat is ready.", Severity.Info);
+    }
+
+    private async Task OnKeyUpAsync(KeyboardEventArgs args)
+    {
+        if (args is { Key: "Enter", ShiftKey: false })
+        {
+            await Execute();
+        }
+    }
+    async Task Execute()
+    {
+        if (IsLoading) return;
+        if (!AppConstants.InternetOK)
+        {
+            Snackbar.Add("Please check internet connection.", Severity.Error);
+            return;
+
+        }
+        if (string.IsNullOrEmpty(Prompt))
+        {
+            Snackbar.Add("Please type a prompt first.", Severity.Warning);
+            return;
+        }
+        _isReceivingResponse = true;
+        await Task.Delay(1);
+        try
+        {
+            Result = await ChatSvc.Chat(Prompt);
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("error response prompt:" + ex, Severity.Warning);
+            Console.WriteLine("error response prompt:" + ex);
+
+        }
+        finally
+        {
+            _isReceivingResponse = false;
+        }
+    }
+
+
+}

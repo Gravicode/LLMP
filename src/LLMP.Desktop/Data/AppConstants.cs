@@ -23,8 +23,11 @@ namespace LLMP.Desktop.Data
      
         
         public static string DefaultModel = "gpt-3.5-turbo-0125";
+        public static string EmbeddingModel = "text-embedding-ada-002";
      
         public const string GemLic = "EDWG-SKFA-D7J1-LDQ5";
+        public static string GoogleSearchKey = "AIzaSyDf96uLG6VJMsxm6QY8n2PbwxthYrcokhQ";//"-- Search Key --";
+        public static string GoogleSearchID = "51c217b7c80494483";//"-- Search Key --";
         public static string OpenAIKey { get; set; }
         public static string OpenAIOrg { get; set; }
         public static string PalmKey { get; set; }

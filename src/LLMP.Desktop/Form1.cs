@@ -21,6 +21,8 @@ namespace LLMP.Desktop
             services.AddWindowsFormsBlazorWebView();
             services.AddSingleton<ChatService>();
             services.AddSingleton<CompletionService>();
+            services.AddSingleton<SearchService>();
+            services.AddSingleton<ChatDocService>();
             services.AddSingleton<AppState>();
             //services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             services.AddMudServices();
