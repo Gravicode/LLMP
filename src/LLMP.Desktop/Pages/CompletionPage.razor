@@ -18,7 +18,7 @@
                 <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
                 <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
                 <MudTextField T="string" Lines="20" @bind-Text="Prompt" Label="Your Prompt" Required="true" RequiredError="Prompt is required!" />
-
+                <MudCheckBox @bind-Value="RenderAsHtml">Render Output as Html</MudCheckBox>
             </MudForm>
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
@@ -50,12 +50,21 @@
                 </MudPaper>
             </MudBadge>
         }
-        <MudPaper Class="pa-4">            
-            @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result))
+        <MudPaper Class="pa-4">      
+            @if (RenderAsHtml)
+            {
+                @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result))
+            }
+            else
+            {
+                 <MudTextField T="string" Lines="20" @bind-Text="Result" Label="Result" ReadOnly />
+            }
+
         </MudPaper>
     </MudItem>
 </MudGrid>
 @code {
+    bool RenderAsHtml{ set; get; }
     string Status = string.Empty;
     bool IsLoading = false;
     bool _isReceivingResponse = false;
