@@ -84,7 +84,7 @@
 </MudGrid>
 @code {
     public string ImageSize { get; set; } = StaticValues.ImageStatics.Size.Size1024;
-    public string ImageStyle { get; set; } = ImageStyles.Natural;
+    public string ImageStyle { get; set; } = ImageStyles.Vivid;
     public int Number { get; set; } = 1;
     public List<ImageModel> Result { get; set; } = new();
     public string SelectedModel { set; get; } = AppConstants.ImageModel3;
@@ -109,7 +109,9 @@
         var bytes = await client.GetByteArrayAsync(item.Url);
         var ms = new MemoryStream(bytes);
         var Image = new Bitmap(ms);       
+        var Dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         var fname = $"img_gen_{DateTime.Now.ToString("dd_MMM_yyyy_HH_mm_ss")}.png";
+        fname = Path.Combine(Dir, fname);
         Image.Save(fname, System.Drawing.Imaging.ImageFormat.Png);
         Snackbar.Add($"File downloaded: {fname}", Severity.Success);
     }
