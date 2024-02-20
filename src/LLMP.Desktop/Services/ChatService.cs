@@ -1,4 +1,5 @@
 ﻿using LLMP.Desktop.Data;
+using LLMP.Models;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AI.PaLM.ChatCompletion;
@@ -28,13 +29,13 @@ namespace LLMP.Desktop.Services
             };
         }
 
-        public void SetupChat(string ModelId, string SystemMessage=null)
+        public void SetupChat(string ModelId, string SystemMessage = null)
         {
             if (!string.IsNullOrEmpty(SystemMessage))
             {
                 this.SystemMessage = SystemMessage;
             }
-            if(ModelId.Contains("bison") || ModelId.Contains("gecko") || ModelId.Contains("gemini")|| ModelId.Contains("embedding"))
+            if (ModelId.Contains("bison") || ModelId.Contains("gecko") || ModelId.Contains("gemini") || ModelId.Contains("embedding"))
             {
                 //palm
                 chatCompletionService = new PaLMChatCompletion(ModelId, AppConstants.PalmKey);
@@ -44,47 +45,88 @@ namespace LLMP.Desktop.Services
                 //open ai
                 chatCompletionService = new OpenAIChatCompletionService(ModelId, AppConstants.OpenAIKey);
             }
-          
+
             chatHistory = new ChatHistory(this.SystemMessage);
             IsReady = true;
         }
 
-        /// <summary>
-        /// Outputs the last message of the chat history
-        /// </summary>
-        public async Task<string?> Chat(string UserMessage,string ImageUrl = "")
+        public void Load(RagData data)
         {
-            if(!IsReady) SetupChat(AppConstants.DefaultModel);
-            // First user message
-            if (string.IsNullOrEmpty(ImageUrl))
+            this.Setting.Temperature = data.Setting.Temperature;
+            this.Setting.TopP = data.Setting.TopP;
+            this.Setting.MaxTokens = data.Setting.MaxToken;
+            this.SystemMessage = data.SystemMessage;
+            var ModelId = data.ModelId;
+            if (ModelId.Contains("bison") || ModelId.Contains("gecko") || ModelId.Contains("gemini") || ModelId.Contains("embedding"))
             {
-                chatHistory.AddUserMessage(UserMessage);
+                //palm
+                chatCompletionService = new PaLMChatCompletion(ModelId, AppConstants.PalmKey);
             }
             else
             {
-                chatHistory.AddUserMessage(new ChatMessageContentItemCollection
+                //open ai
+                chatCompletionService = new OpenAIChatCompletionService(ModelId, AppConstants.OpenAIKey);
+            }
+
+            chatHistory = new ChatHistory(this.SystemMessage);
+            foreach (var item in data.Items)
+            {
+                if (string.IsNullOrEmpty(item.ImageUrl))
+                {
+                    chatHistory.AddUserMessage(item.Question);
+                    chatHistory.AddAssistantMessage(item.Answer);
+
+                }
+                else
+                {
+                    chatHistory.AddUserMessage(new ChatMessageContentItemCollection
+        {
+            new TextContent(item.Question),
+            new ImageContent(new Uri(item.ImageUrl))
+        });
+                    chatHistory.AddAssistantMessage(item.Answer);
+                }
+
+            }
+            IsReady = true;
+        }
+
+            /// <summary>
+            /// Outputs the last message of the chat history
+            /// </summary>
+            public async Task<string?> Chat(string UserMessage, string ImageUrl = "")
+            {
+                if (!IsReady) SetupChat(AppConstants.DefaultModel);
+                // First user message
+                if (string.IsNullOrEmpty(ImageUrl))
+                {
+                    chatHistory.AddUserMessage(UserMessage);
+                }
+                else
+                {
+                    chatHistory.AddUserMessage(new ChatMessageContentItemCollection
         {
             new TextContent(UserMessage),
             new ImageContent(new Uri(ImageUrl))
         });
+                }
+                var message = chatHistory.Last();
+
+                Console.WriteLine($"{message.Role}: {message.Content}");
+                Console.WriteLine("------------------------");
+
+                // First bot assistant message
+
+
+                var reply = await chatCompletionService.GetChatMessageContentAsync(chatHistory, Setting);
+                chatHistory.Add(reply);
+
+                message = chatHistory.Last();
+
+                Console.WriteLine($"{message.Role}: {message.Content}");
+                Console.WriteLine("------------------------");
+
+                return message.Content;
             }
-            var message = chatHistory.Last();
-
-            Console.WriteLine($"{message.Role}: {message.Content}");
-            Console.WriteLine("------------------------");
-
-            // First bot assistant message
-          
-
-            var reply = await chatCompletionService.GetChatMessageContentAsync(chatHistory,Setting);
-            chatHistory.Add(reply);
-          
-            message = chatHistory.Last();
-
-            Console.WriteLine($"{message.Role}: {message.Content}");
-            Console.WriteLine("------------------------");
-
-            return message.Content;
         }
     }
-}

@@ -1,24 +1,37 @@
-﻿@page "/completion-page"
+﻿@page "/image-generator-page"
 @inject AppState AppState
 @inject ISnackbar Snackbar
-@inject CompletionService ChatSvc
+@inject ImageGeneratorService ChatSvc
 
-<h3>Completion</h3>
+<h3>Image Generator Page</h3>
 <MudGrid>
     <MudItem xs="12" sm="7">
         <MudPaper Class="pa-4">
             <MudForm>
-                <MudSelect T="string" @bind-Value="@SelectedModel" Label="Models" AnchorOrigin="Origin.BottomCenter">
-                    @foreach (var model in AppConstants.ModelOpenAIs)
+            <MudTextField T="int" @bind-Value="@Number" Label="Number of Images" Required="true" RequiredError="Number is required!" />
+           <MudSelect @bind-Value="@SelectedModel" T="string" Label="Image Model" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@(AppConstants.ImageModel2)" />
+                <MudSelectItem Value="@(AppConstants.ImageModel3)" />
+            </MudSelect> 
+            <MudSelect @bind-Value="@ImageSize" T="string" Label="Image Size" AnchorOrigin="Origin.BottomCenter">
+                    @if (SelectedModel == AppConstants.ImageModel2)
                     {
-                        <MudSelectItem Value="@model" />
+                        <MudSelectItem Value="@(StaticValues.ImageStatics.Size.Size256)" />
+                        <MudSelectItem Value="@(StaticValues.ImageStatics.Size.Size512)" />
+                        <MudSelectItem Value="@(StaticValues.ImageStatics.Size.Size1024)" />
                     }
-                </MudSelect>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.Temperature" Min="0" Max="2" Step="0.1">Temperature</MudSlider>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
-                <MudTextField T="string" Lines="20" @bind-Text="Prompt" Label="Your Prompt" Required="true" RequiredError="Prompt is required!" />
-
+                    else
+                    {
+                        <MudSelectItem Value="@(StaticValues.ImageStatics.Size.Size1792x1024)" />
+                        <MudSelectItem Value="@(StaticValues.ImageStatics.Size.Size1024x1792)" />
+                        <MudSelectItem Value="@(StaticValues.ImageStatics.Size.Size1024)" />
+                    }
+                </MudSelect> 
+            <MudSelect @bind-Value="@ImageStyle" T="string" Label="Image Style" AnchorOrigin="Origin.BottomCenter">
+                <MudSelectItem Value="@(ImageStyles.Natural)" />
+                <MudSelectItem Value="@(ImageStyles.Vivid)" />
+            </MudSelect>
+              <MudTextField T="string" Lines="5" @bind-Text="Prompt" Label="Your Prompt" Required="true" RequiredError="Prompt is required!" />
             </MudForm>
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
@@ -50,39 +63,61 @@
                 </MudPaper>
             </MudBadge>
         }
-        <MudPaper Class="pa-4">            
-            @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result))
-        </MudPaper>
+        
     </MudItem>
+    @if (Result.Count > 0)
+        {
+            @foreach (var item in Result)
+            {
+               <MudItem xs="12" sm="12">
+                     <MudImage Height="480" Src="@item.Url" Alt="generated" Elevation="25" Class="rounded-lg" ObjectFit="ObjectFit.Contain" ></MudImage> 
+               </MudItem>
+                <MudItem xs="12" sm="12">
+                <MudPaper Class="pa-4">    
+                    <MudButton @onclick="()=>Delete(item)" Color="Color.Warning">Delete</MudButton>
+                    <MudButton @onclick="()=>Download(item)" Color="Color.Primary">Save</MudButton>
+                </MudPaper>
+               </MudItem>
+               
+            }
+        }
 </MudGrid>
 @code {
+    public string ImageSize { get; set; } = StaticValues.ImageStatics.Size.Size1024;
+    public string ImageStyle { get; set; } = ImageStyles.Natural;
+    public int Number { get; set; } = 1;
+    public List<ImageModel> Result { get; set; } = new();
+    public string SelectedModel { set; get; } = AppConstants.ImageModel3;
     string Status = string.Empty;
     bool IsLoading = false;
     bool _isReceivingResponse = false;
-    string Result;
-    string _SelectedModel;
-    string SelectedModel
-    {
-        set
-        {
-            var reset = _SelectedModel != value;
-            _SelectedModel = value;
-            if (reset) Reset();
-        }
-        get { return _SelectedModel; }
-    }
+
     List<string> infos = new();
-    string Prompt { set; get; } = "I want to go to ";
+    string Prompt { set; get; } = "Innovate a movie poster for a film of a genre of your choosing, such as sci-fi, and give it a title, like ‘Space World’";
     protected override async Task OnInitializedAsync()
     {
-        SelectedModel = AppConstants.ModelOpenAIs.FirstOrDefault();
+
         //await Reset();
+    }
+    async Task Delete(ImageModel item)
+    {
+        Result.Remove(item);
+    }
+    HttpClient client = new();
+    async Task Download(ImageModel item)
+    {
+        var bytes = await client.GetByteArrayAsync(item.Url);
+        var ms = new MemoryStream(bytes);
+        var Image = new Bitmap(ms);       
+        var fname = $"img_gen_{DateTime.Now.ToString("dd_MMM_yyyy_HH_mm_ss")}.png";
+        Image.Save(fname, System.Drawing.Imaging.ImageFormat.Png);
+        Snackbar.Add($"File downloaded: {fname}", Severity.Success);
     }
     async Task Save()
     {
         var Dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-        var fName = Path.Combine(Dir, $"completion_{DateTime.Now.ToString("dd_MMM_yyyy_HH_mm_ss")}.json");
-        var data = new CompletionData() { Setting = new AISetting (){ MaxToken = ChatSvc.Setting.MaxTokens, Temperature = ChatSvc.Setting.Temperature, TopP = ChatSvc.Setting.TopP }, Completion = Prompt, ModelId = SelectedModel };
+        var fName = Path.Combine(Dir, $"image_{DateTime.Now.ToString("dd_MMM_yyyy_HH_mm_ss")}.json");
+        var data = new ImageGenData() { Completion = Prompt, ModelId = "dall-e" };
         var json = JsonConvert.SerializeObject(data, Formatting.Indented);
         File.WriteAllText(fName,json);
         Snackbar.Add($"File saved: {fName}", Severity.Success);
@@ -104,14 +139,12 @@
                 try
                 {
                     var text = File.ReadAllText(file);
-                    var data = JsonConvert.DeserializeObject<CompletionData>(text);
+                    var data = JsonConvert.DeserializeObject<ImageGenData>(text);
                     if (data != null)
                     {
-                        SelectedModel = data.ModelId;
+
                         Prompt = data.Completion;
-                        ChatSvc.Setting.Temperature = data.Setting.Temperature;
-                        ChatSvc.Setting.TopP = data.Setting.TopP;
-                        ChatSvc.Setting.MaxTokens = data.Setting.MaxToken;
+
                         Snackbar.Add("File is loaded.", Severity.Info);
                     }
                     else
@@ -143,11 +176,10 @@
 
     async Task Reset()
     {
-        ChatSvc.Setup(SelectedModel);
-        Prompt=string.Empty;
-        Result = string.Empty;
-        infos.Add($"{DateTime.Now} - Chat is ready.");
-        Snackbar.Add($"{DateTime.Now} - Chat is ready.", Severity.Info);
+        Result.Clear();
+        Prompt=string.Empty;        
+        infos.Add($"{DateTime.Now} - Generator is ready.");
+        Snackbar.Add($"{DateTime.Now} - Generator is ready.", Severity.Info);
     }
 
     private async Task OnKeyUpAsync(KeyboardEventArgs args)
@@ -174,8 +206,13 @@
         _isReceivingResponse = true;
         try
         {
-            Result = await ChatSvc.ExecutePrompt(Prompt);
-
+            var res = await ChatSvc.GenerateImageAsync(Prompt, Number, ImageSize, SelectedModel, ImageStyle);
+            Result = res.Result;
+            if (!string.IsNullOrEmpty(res.Message))
+            {
+                Snackbar.Add(res.Message, Severity.Warning);
+            }
+            infos.Add("image generated..");
         }
         catch (Exception ex)
         {

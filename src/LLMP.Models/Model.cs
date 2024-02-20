@@ -4,6 +4,39 @@ using System.Runtime.Serialization;
 
 namespace LLMP.Models
 {
+    public class ImageModel
+    {
+        public string Url { get; set; }
+        public string Title { get; set; }
+        public string Desc { get; set; }
+    }
+    public class AISetting
+    {
+        public double Temperature { set; get; }
+        public double TopP { set; get; }
+        public int? MaxToken { set; get; }
+    }
+    public class CompletionData
+    {
+        public AISetting Setting { get; set; }
+        public string ModelId { get; set; }
+        public string Completion { get; set; }
+        
+    }
+    public class ImageGenData
+    {
+       
+        public string ModelId { get; set; }
+        public string Completion { get; set; }
+        
+    }
+    public class RagData
+    {
+        public AISetting Setting { get; set; }
+        public string ModelId { get; set; }
+        public string SystemMessage { get; set; }
+        public List<RAGItem> Items { set; get; }
+    }
     public class RAGItem
     {
         public List<SourceItem> Sources { get; set; } = new();

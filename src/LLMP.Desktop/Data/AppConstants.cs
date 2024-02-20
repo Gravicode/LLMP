@@ -7,6 +7,8 @@ namespace LLMP.Desktop.Data
 {
     public class AppConstants
     {
+        public static string ImageModel2 = "dall-e-2";
+        public static string ImageModel3 = "dall-e-3";
         public static string BlobPrefix = "https://magicpocket.blob.core.windows.net/gambar/";//"-- Search Key --";
         public static string BlobConn = "DefaultEndpointsProtocol=https;AccountName=magicpocket;AccountKey=9RN2G/QUHfUPylJaimcOwWeRjXQmU4bRH7BZOz8fXEjZWrmfBTfcAK4cSbvi7NPUcGlcrwOFHreY+AStmoYmYg==;EndpointSuffix=core.windows.net";//"-- Search Key --";
         public static string ContainerName = "gambar";//"-- Search Key --";

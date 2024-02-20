@@ -23,6 +23,8 @@
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
             <MudButton Variant="Variant.Filled" Color="Color.Success" DisableElevation="true" OnClick="Reset" Class="mx-2">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Info" DisableElevation="true" OnClick="Load" Class="mx-2">Load</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="Save" Class="mx-2">Save</MudButton>
         </MudPaper>
     </MudItem>
     <MudItem xs="12" sm="5">
@@ -201,7 +203,7 @@
     {
         await Blob.Configure(AppConstants.BlobConn, AppConstants.ContainerName);
         SelectedModel = AppConstants.ModelOpenAIs.FirstOrDefault();
-        await Reset();
+        //await Reset();
     }
     public async Task PickMedia()
     {
@@ -251,6 +253,69 @@
             // The user canceled or something went wrong
         }
     }
+
+    async Task Save()
+    {
+        var Dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        var fName = Path.Combine(Dir, $"chat_{DateTime.Now.ToString("dd_MMM_yyyy_HH_mm_ss")}.json");
+        var data = new RagData() { Setting = new AISetting (){ MaxToken = ChatSvc.Setting.MaxTokens, Temperature = ChatSvc.Setting.Temperature, TopP = ChatSvc.Setting.TopP },  SystemMessage = SystemMessage, Items = Items, ModelId = SelectedModel };
+        var json = JsonConvert.SerializeObject(data, Formatting.Indented);
+        File.WriteAllText(fName,json);
+        Snackbar.Add($"File saved: {fName}", Severity.Success);
+    }
+    async Task Load()
+    {
+        var Dir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        try
+        {
+            int size = -1;
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.InitialDirectory = Dir;
+            openFileDialog1.Title = "Open Json Data";
+            openFileDialog1.Filter = "json files (*.json)|*.json";
+            var result = openFileDialog1.ShowDialog(); // Show the dialog.
+            if (result ==   System.Windows.Forms.DialogResult.OK) // Test result.
+            {
+                string file = openFileDialog1.FileName;
+                try
+                {
+                    var text = File.ReadAllText(file);
+                    var data = JsonConvert.DeserializeObject<RagData>(text);
+                    if (data != null)
+                    {
+                        SelectedModel = data.ModelId;
+                        SystemMessage = data.SystemMessage;
+                        Items = data.Items;
+                        ChatSvc.Load(data);
+                        Snackbar.Add("File is loaded.", Severity.Info);
+                    }
+                    else
+                    {
+                         Snackbar.Add("File cannot be opened.", Severity.Warning);
+                    }
+                }
+                catch (IOException)
+                {
+                }
+            }
+            else
+            {
+                infos.Add("Only support json data");
+            }
+            Console.WriteLine(size); // <-- Shows file size in debugging mode.
+            Console.WriteLine(result); // <-- For debugging use.
+
+
+
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"File load error: {ex}", Severity.Error);
+            // The user canceled or something went wrong
+        }
+    }
+
     async Task OnClearChat()
     {
         Items.Clear();

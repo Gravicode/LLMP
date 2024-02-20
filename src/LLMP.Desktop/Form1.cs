@@ -7,6 +7,7 @@ using MudBlazor.Services;
 using static System.Windows.Forms.AxHost;
 using WaterPositive.Kiosk.Helpers;
 using Microsoft.Identity.Client.NativeInterop;
+using OpenAI.Extensions;
 namespace LLMP.Desktop
 {
     public partial class Form1 : Form
@@ -19,10 +20,13 @@ namespace LLMP.Desktop
             this.Text = "LLM Playground v0.1";
             var services = new ServiceCollection();
             services.AddWindowsFormsBlazorWebView();
+            services.AddOpenAIService(settings => { settings.ApiKey = AppConstants.OpenAIKey; settings.Organization = AppConstants.OpenAIOrg; });
+
             services.AddSingleton<ChatService>();
             services.AddSingleton<CompletionService>();
             services.AddSingleton<SearchService>();
             services.AddSingleton<ChatDocService>();
+            services.AddSingleton<ImageGeneratorService>();
             services.AddSingleton<AppState>();
             //services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
             services.AddMudServices();
