@@ -1,6 +1,7 @@
 ﻿using LLMP.Desktop.Data;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.AI.PaLM.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System;
 using System.Collections.Generic;
@@ -27,13 +28,23 @@ namespace LLMP.Desktop.Services
             };
         }
 
-        public void SetupOpenAI(string ModelId, string SystemMessage=null)
+        public void SetupChat(string ModelId, string SystemMessage=null)
         {
             if (!string.IsNullOrEmpty(SystemMessage))
             {
                 this.SystemMessage = SystemMessage;
             }
-            chatCompletionService = new OpenAIChatCompletionService(ModelId, AppConstants.OpenAIKey);
+            if(ModelId.Contains("bison") || ModelId.Contains("gecko"))
+            {
+                //palm
+                chatCompletionService = new PaLMChatCompletion(ModelId, AppConstants.PalmKey);
+            }
+            else
+            {
+                //open ai
+                chatCompletionService = new OpenAIChatCompletionService(ModelId, AppConstants.OpenAIKey);
+            }
+          
             chatHistory = new ChatHistory(this.SystemMessage);
             IsReady = true;
         }
@@ -43,7 +54,7 @@ namespace LLMP.Desktop.Services
         /// </summary>
         public async Task<string?> Chat(string UserMessage,string ImageUrl = "")
         {
-            if(!IsReady) SetupOpenAI(AppConstants.DefaultModel);
+            if(!IsReady) SetupChat(AppConstants.DefaultModel);
             // First user message
             if (string.IsNullOrEmpty(ImageUrl))
             {

@@ -261,7 +261,7 @@
     }
     async Task Reset()
     {
-        ChatSvc.SetupOpenAI(SelectedModel, SystemMessage);
+        ChatSvc.SetupChat(SelectedModel, SystemMessage);
         Items.Clear();
         ImageName = string.Empty;
         ImageData = null;

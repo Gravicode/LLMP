@@ -31,6 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <ProjectReference Include="..\Connectors.AI.PaLM\Connectors.AI.PaLM.csproj" />
 	  <ProjectReference Include="..\LLMP.Models\LLMP.Models.csproj" />
 	  <ProjectReference Include="..\LLMP.Tools\LLMP.Tools.csproj" />
 	</ItemGroup>

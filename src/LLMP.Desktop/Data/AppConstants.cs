@@ -28,7 +28,7 @@ namespace LLMP.Desktop.Data
         public static string OpenAIKey { get; set; }
         public static string OpenAIOrg { get; set; }
         public static string PalmKey { get; set; }
-        public static List<string> ModelOpenAIs = new List<string> { "gpt-3.5-turbo-0125", "gpt-4-0125-preview", "gpt-4-vision-preview" };        
+        public static List<string> ModelOpenAIs = new List<string> { "gpt-3.5-turbo-0125", "gpt-4-0125-preview", "gpt-4-vision-preview", "chat-bison-001" };        
         
     }
 }

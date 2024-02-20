@@ -39,12 +39,24 @@ namespace LLMP.Desktop.Services
         public void Setup(string ModelId)
         {
             this.SelectedModel = ModelId;
-            kernel = Kernel.CreateBuilder()
-           .AddOpenAIChatCompletion(
-               modelId: ModelId,
-               apiKey: AppConstants.OpenAIKey,
-               orgId: AppConstants.OpenAIOrg)
-           .Build();
+            if (this.SelectedModel.Contains("bison") || this.SelectedModel.Contains("gecko"))
+            {
+                kernel = Kernel.CreateBuilder()
+               .AddPaLMChatCompletion(
+                   modelId: ModelId,
+                   apiKey: AppConstants.PalmKey)
+               .Build();
+            }
+            else
+            {
+                kernel = Kernel.CreateBuilder()
+               .AddOpenAIChatCompletion(
+                   modelId: ModelId,
+                   apiKey: AppConstants.OpenAIKey,
+                   orgId: AppConstants.OpenAIOrg)
+               .Build();
+            }
+            IsReady = true;
         }
     }
 }
