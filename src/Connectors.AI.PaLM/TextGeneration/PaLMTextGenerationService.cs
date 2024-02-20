@@ -24,9 +24,12 @@ namespace Microsoft.SemanticKernel.Connectors.PaLM;
 public sealed class PaLMTextGenerationService : ITextGenerationService
 #pragma warning restore CA1001 // Types that own disposable fields should be disposable. No need to dispose the Http client here. It can either be an internal client using NonDisposableHttpClientHandler or an external client managed by the calling code, which should handle its disposal.
 {
-    private const string PaLMApiEndpoint ="https://generativelanguage.googleapis.com/v1beta2/models";
+    //private const string PaLMApiEndpoint ="https://generativelanguage.googleapis.com/v1beta2/models";
+    private const string PaLMApiEndpoint = "https://generativelanguage.googleapis.com/v1beta/models";
+
     private const string HttpUserAgent = "Microsoft-Semantic-Kernel";
-    private readonly string _model = "text-bison-001";
+    //private readonly string _model = "text-bison-001";
+    private readonly string _model = "gemini-pro";
     private readonly string? _endpoint;
     private readonly HttpClient _httpClient;
     private readonly string? _apiKey;
@@ -101,7 +104,8 @@ public sealed class PaLMTextGenerationService : ITextGenerationService
     private async Task<IReadOnlyList<TextContent>> InternalGetTextContentsAsync(string text, CancellationToken cancellationToken = default)
     {
         var completionRequest = new TextCompletionRequest();
-        completionRequest.Prompt.Text = text;
+        //completionRequest.Prompt.Text = text;
+        completionRequest.contents.First().parts.First().text = text;
 
         using var httpRequestMessage = new HttpRequestMessage()
         {
@@ -139,7 +143,7 @@ public sealed class PaLMTextGenerationService : ITextGenerationService
 
         }
 
-        return completionResponse.Candidates.ToList().ConvertAll(responseContent => new TextContent(responseContent.Output, this.GetModelId(), responseContent));
+        return completionResponse.Candidates.ToList().ConvertAll(responseContent => new TextContent(responseContent.content.parts.First().text, this.GetModelId(), responseContent));
     }
 
     /// <summary>
@@ -161,8 +165,54 @@ public sealed class PaLMTextGenerationService : ITextGenerationService
             baseUrl = this._httpClient.BaseAddress!.AbsoluteUri;
         }
 
-        var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:generateText?key={this._apiKey}";
+        //var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:generateText?key={this._apiKey}";
+        var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:generateContent?key={this._apiKey}";
+        //https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=YOUR_API_KEY
+        /*
+        #!/bin/bash
 
+API_KEY="YOUR_API_KEY"
+
+curl \
+  -X POST https://generativelanguage.googleapis.com/v1beta/models/gemini-1.0-pro:generateContent?key=${API_KEY} \
+  -H 'Content-Type: application/json' \
+  -d @<(echo '{
+  "contents": [
+    {
+      "parts": [
+        {
+          "text": "hi"
+        }
+      ]
+    }
+  ],
+  "generationConfig": {
+    "temperature": 1,
+    "topK": 1,
+    "topP": 1,
+    "maxOutputTokens": 2048,
+    "stopSequences": []
+  },
+  "safetySettings": [
+    {
+      "category": "HARM_CATEGORY_HARASSMENT",
+      "threshold": "BLOCK_ONLY_HIGH"
+    },
+    {
+      "category": "HARM_CATEGORY_HATE_SPEECH",
+      "threshold": "BLOCK_ONLY_HIGH"
+    },
+    {
+      "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+      "threshold": "BLOCK_ONLY_HIGH"
+    },
+    {
+      "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+      "threshold": "BLOCK_ONLY_HIGH"
+    }
+  ]
+}')
+         */
         return new Uri(url);
     }
     #endregion

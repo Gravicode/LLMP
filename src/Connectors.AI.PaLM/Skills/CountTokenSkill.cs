@@ -2,6 +2,7 @@
 using System;
 //using Microsoft.SemanticKernel.SkillDefinition;
 using System.ComponentModel;
+using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading;
@@ -12,8 +13,10 @@ namespace Connectors.AI.PaLM.Skills;
 public sealed class TokenSkill:IDisposable
 {
     private const string HttpUserAgent = "Microsoft-Semantic-Kernel";
-    private readonly string _model;
-    private readonly string? _endpoint = "https://generativelanguage.googleapis.com/v1beta2/models";
+    //private readonly string _model;
+    private readonly string _model = "gemini-pro";
+    //private readonly string? _endpoint = "https://generativelanguage.googleapis.com/v1beta2/models";
+    private readonly string? _endpoint = "https://generativelanguage.googleapis.com/v1beta/models";
     private readonly HttpClient _httpClient;
     private readonly string? _apiKey;
 
@@ -50,7 +53,7 @@ public sealed class TokenSkill:IDisposable
         try
         {
             var tokenRequest = new TokenRequest();
-            tokenRequest.Prompt.Messages.Add(new MessageToken() { Content = input });
+            tokenRequest.contents.First().parts.First().text= input;
 
             using var httpRequestMessage = new HttpRequestMessage()
             {
@@ -66,7 +69,7 @@ public sealed class TokenSkill:IDisposable
 
             var tokenResp = JsonSerializer.Deserialize<TokenResponse>(body);
 
-            return tokenResp.TokenCount ?? 0;
+            return tokenResp.totalTokens;
         }
         catch (Exception e) 
         {
@@ -103,7 +106,8 @@ public sealed class TokenSkill:IDisposable
         {
             throw new Exception( "No endpoint or HTTP client base address has been provided");
         }
-        var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:countMessageTokens?key={this._apiKey}";
+        //var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:countMessageTokens?key={this._apiKey}";
+        var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:countTokens?key={this._apiKey}";
         return new Uri(url);
     }
 }

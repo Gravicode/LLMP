@@ -47,8 +47,8 @@
                 </MudPaper>
             </MudBadge>
         }
-        <MudPaper Class="pa-4">
-            <MudTextField T="string" Lines="20" @bind-Text="Result" Label="Result" ReadOnly />
+        <MudPaper Class="pa-4">            
+            @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result))
         </MudPaper>
     </MudItem>
 </MudGrid>

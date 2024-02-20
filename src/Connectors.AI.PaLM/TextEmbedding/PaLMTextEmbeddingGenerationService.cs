@@ -28,7 +28,8 @@ public sealed class PaLMTextEmbeddingGenerationService : ITextEmbeddingGeneratio
 {
     private readonly string? _apiKey;
     private const string HttpUserAgent = "Microsoft-Semantic-Kernel";
-    private readonly string _model = "embedding-gecko-001";
+    //private readonly string _model = "embedding-gecko-001";
+    private readonly string _model = "embedding-001";
     private readonly string? _endpoint;
     private readonly HttpClient _httpClient;
     private readonly Dictionary<string, object?> _attributes = new();
@@ -115,10 +116,15 @@ public sealed class PaLMTextEmbeddingGenerationService : ITextEmbeddingGeneratio
     private async Task<IList<ReadOnlyMemory<float>>> ExecuteEmbeddingRequestAsync(IList<string> data, CancellationToken cancellationToken)
     {
         var embeddingRequest = new TextEmbeddingRequest
-        {
-            Text = string.Join(" ", data)
+        { 
+            //Text = string.Join(" ", data)
         };
-
+        var items = new List<Part>();
+        foreach(var item in data)
+        {
+            items.Add(new Part() { text = item });
+        }
+        embeddingRequest.content.parts = items.ToArray();
         using var httpRequestMessage = new HttpRequestMessage()
         {
             Method = HttpMethod.Post,
@@ -141,7 +147,7 @@ public sealed class PaLMTextEmbeddingGenerationService : ITextEmbeddingGeneratio
                     $"{errorCls.error.code}-{errorCls.error.status}: {errorCls.error.message}");
             }
         }
-        return new List<ReadOnlyMemory<float>>() { new ReadOnlyMemory<float>(embeddingResponse?.embedding.value.ToArray()) };
+        return new List<ReadOnlyMemory<float>>() { new ReadOnlyMemory<float>(embeddingResponse?.embedding.values) };
 
     }
 
@@ -168,7 +174,8 @@ public sealed class PaLMTextEmbeddingGenerationService : ITextEmbeddingGeneratio
             throw new KernelException("No endpoint or HTTP client base address has been provided");
         }
 
-        var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:embedText?key={this._apiKey}";
+        //var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:embedText?key={this._apiKey}";
+        var url = $"{baseUrl!.TrimEnd('/')}/{this._model}:embedContent?key={this._apiKey}";
 
         return new Uri(url);
     }

@@ -39,7 +39,7 @@ namespace LLMP.Desktop.Services
         public void Setup(string ModelId)
         {
             this.SelectedModel = ModelId;
-            if (this.SelectedModel.Contains("bison") || this.SelectedModel.Contains("gecko"))
+            if (this.SelectedModel.Contains("bison") || this.SelectedModel.Contains("gecko") || ModelId.Contains("gemini") || ModelId.Contains("embedding"))
             {
                 kernel = Kernel.CreateBuilder()
                .AddPaLMChatCompletion(

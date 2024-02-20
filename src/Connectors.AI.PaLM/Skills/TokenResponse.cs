@@ -3,8 +3,15 @@
 using System.Text.Json.Serialization;
 
 namespace Connectors.AI.PaLM.Skills;
+/*
 public class TokenResponse
 {
     [JsonPropertyName("tokenCount")]
     public int? TokenCount { get; set; }
+}
+*/
+
+public class TokenResponse
+{
+    public int totalTokens { get; set; }
 }

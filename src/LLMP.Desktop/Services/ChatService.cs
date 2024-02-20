@@ -34,7 +34,7 @@ namespace LLMP.Desktop.Services
             {
                 this.SystemMessage = SystemMessage;
             }
-            if(ModelId.Contains("bison") || ModelId.Contains("gecko"))
+            if(ModelId.Contains("bison") || ModelId.Contains("gecko") || ModelId.Contains("gemini")|| ModelId.Contains("embedding"))
             {
                 //palm
                 chatCompletionService = new PaLMChatCompletion(ModelId, AppConstants.PalmKey);

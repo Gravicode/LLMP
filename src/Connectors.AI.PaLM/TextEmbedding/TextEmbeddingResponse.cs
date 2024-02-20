@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 
 namespace Connectors.AI.PaLM.TextEmbedding;
-
+/*
 /// <summary>
 /// embedding values in float 
 /// </summary>
@@ -18,4 +18,15 @@ public class Embedding
 public sealed class TextEmbeddingResponse
 {
     public Embedding? embedding { get; set; }
+}
+*/
+
+public class TextEmbeddingResponse
+{
+    public Embedding? embedding { get; set; }
+}
+
+public class Embedding
+{
+    public float[] values { get; set; }
 }
