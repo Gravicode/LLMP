@@ -16,6 +16,7 @@ namespace LLMP.Desktop
         public Form1()
         {
             InitializeComponent();
+            this.Text = "LLM Playground v0.1";
             var services = new ServiceCollection();
             services.AddWindowsFormsBlazorWebView();
             services.AddSingleton<ChatService>();

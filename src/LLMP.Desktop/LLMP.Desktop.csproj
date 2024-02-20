@@ -6,7 +6,12 @@
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<ApplicationIcon>LLM.ico</ApplicationIcon>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <Content Include="LLM.ico" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="SkiaSharp" Version="2.88.7" />
