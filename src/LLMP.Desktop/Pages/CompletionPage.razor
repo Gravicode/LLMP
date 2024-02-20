@@ -1,0 +1,129 @@
+﻿@page "/completion-page"
+@inject AppState AppState
+@inject ISnackbar Snackbar
+@inject CompletionService ChatSvc
+
+<h3>Completion</h3>
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm>
+                <MudSelect T="string" @bind-Value="@SelectedModel" Label="Models" AnchorOrigin="Origin.BottomCenter">
+                    @foreach (var model in AppConstants.ModelOpenAIs)
+                    {
+                        <MudSelectItem Value="@model" />
+                    }
+                </MudSelect>
+                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.Temperature" Min="0" Max="2" Step="0.1">Temperature</MudSlider>
+                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
+                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
+                <MudTextField T="string" Lines="20" @bind-Text="Prompt" Label="Your Prompt" Required="true" RequiredError="Prompt is required!" />
+
+            </MudForm>
+        </MudPaper>
+        <MudPaper Class="pa-4 mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Success" DisableElevation="true" OnClick="Reset" Class="mx-2">Reset</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" DisableElevation="true" OnClick="Execute" Class="mx-2">Execute</MudButton>
+        </MudPaper>
+    </MudItem>
+    <MudItem xs="12" sm="5">
+        <MudPaper Class="pa-4 mud-height-full">
+            <MudText Typo="Typo.subtitle2">@($"Info ({infos.Count})")</MudText>
+            @foreach (var error in infos)
+            {
+                <MudText Color="@Color.Info">@error</MudText>
+            }
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="12">
+        @if (_isReceivingResponse)
+        {
+            <MudBadge Origin="Origin.TopLeft" Overlap="true" Color="Color.Secondary"
+                      Icon="@Icons.Material.Filled.Lightbulb" Class="full-width">
+                <MudPaper Class="pa-6" Elevation="3">
+                    <Loading />
+                </MudPaper>
+            </MudBadge>
+        }
+        <MudPaper Class="pa-4">
+            <MudTextField T="string" Lines="20" @bind-Text="Result" Label="Result" ReadOnly />
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+@code {
+    string Status = string.Empty;
+    bool IsLoading = false;
+    bool _isReceivingResponse = false;
+    string Result;
+    string _SelectedModel;
+    string SelectedModel
+    {
+        set
+        {
+            var reset = _SelectedModel != value;
+            _SelectedModel = value;
+            if (reset) Reset();
+        }
+        get { return _SelectedModel; }
+    }
+    List<string> infos = new();
+    string Prompt { set; get; } = "I want to go to ";
+    protected override async Task OnInitializedAsync()
+    {
+        SelectedModel = AppConstants.ModelOpenAIs.FirstOrDefault();
+        await Reset();
+    }
+
+
+    async Task Reset()
+    {
+        ChatSvc.Setup(SelectedModel);
+        Prompt=string.Empty;
+        Result = string.Empty;
+        infos.Add($"{DateTime.Now} - Chat is ready.");
+        Snackbar.Add($"{DateTime.Now} - Chat is ready.", Severity.Info);
+    }
+
+    private async Task OnKeyUpAsync(KeyboardEventArgs args)
+    {
+        if (args is { Key: "Enter", ShiftKey: false })
+        {
+            await Execute();
+        }
+    }
+    async Task Execute()
+    {
+        if (IsLoading) return;
+        if (!AppConstants.InternetOK)
+        {
+            Snackbar.Add("Please check internet connection.", Severity.Error);
+            return;
+
+        }
+        if (string.IsNullOrEmpty(Prompt))
+        {
+            Snackbar.Add("Please type a prompt first.", Severity.Warning);
+            return;
+        }
+        _isReceivingResponse = true;
+        try
+        {
+            Result = await ChatSvc.ExecutePrompt(Prompt);
+
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("error response prompt:" + ex, Severity.Warning);
+            Console.WriteLine("error response prompt:" + ex);
+
+        }
+        finally
+        {
+            _isReceivingResponse = false;
+        }
+    }
+
+
+}
