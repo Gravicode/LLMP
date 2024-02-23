@@ -10,6 +10,7 @@ using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AI.PaLM.TextCompletion;
+using System.IO;
 
 namespace Connectors.AI.PaLM.Helper
 {
@@ -59,6 +60,7 @@ namespace Connectors.AI.PaLM.Helper
             return string.Empty;
         }
         */
+       
         public virtual async Task<string> GetMessageAsync(PaLMChatHistory history, PromptExecutionSettings settings, CancellationToken cancellationToken = default(CancellationToken))
         {
             try
@@ -66,7 +68,23 @@ namespace Connectors.AI.PaLM.Helper
                 OpenAIPromptExecutionSettings oaisetting = OpenAIPromptExecutionSettings.FromExecutionSettings(settings);
                 var context = history.Where(x => x.Role == AuthorRole.System).FirstOrDefault();
                 var hist = new List<ContentChat>();
-                history.ToList().ForEach(x => { if (x.Role != AuthorRole.System) { hist.Add(new ContentChat() { role = x.Role == AuthorRole.Assistant ? "model" : "user", parts = new PartContent[] { new PartContent() { text = x.Content } } }); } });
+                history.ToList().ForEach(async x => {
+                    if (x.Role != AuthorRole.System)
+                    {
+                        InlineData inlinedata = null;
+                        if(x.Items.Any(x=>x is ImageContent))
+                        {
+                            var imgContent = x.Items.Where(x => x is ImageContent).FirstOrDefault() as ImageContent;
+                            var url = imgContent.Uri.ToString();
+                            var mime = $"image/{Path.GetExtension(url).Replace(".","")}";
+                            var bytes = await Client.GetByteArrayAsync(url);                            
+                            string base64img = Convert.ToBase64String(bytes);
+                            inlinedata = new InlineData() { mime_type = mime, data = base64img };
+                            
+                        }
+                        hist.Add(new ContentChat() { role = x.Role == AuthorRole.Assistant ? "model" : "user", parts = new PartContent[] { new PartContent() { text = x.Content, inline_data = inlinedata ?? new() } } });
+                    } 
+                });
                 var json = new RequestPaLMChat() { contents = hist.ToArray(), generationConfig = new Generationconfig() { temperature = (float)oaisetting.Temperature, topP = (float)oaisetting.TopP, topK = 1, maxOutputTokens = oaisetting.MaxTokens.Value, stopSequences = (oaisetting.StopSequences == null ? new string[0] : oaisetting.StopSequences.ToArray()) } };
                 var url = ServiceUrl.Replace("[$MODEL]", this.Model).Replace("[$API_KEY]", this.ApiKey);
                 var res = await Client.PostAsync(url, new StringContent(JsonSerializer.Serialize(json), System.Text.Encoding.UTF8, "application/json"), cancellationToken);
@@ -217,8 +235,13 @@ namespace Connectors.AI.PaLM.Helper
     public class PartContent
     {
         public string text { get; set; }
+        public InlineData? inline_data { get; set; }
     }
-
+    public class InlineData
+    {
+        public string mime_type { get; set; }
+        public string data { get; set; }
+    }
 
     #endregion
 }

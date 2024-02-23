@@ -9,9 +9,9 @@ namespace LLMP.Desktop.Data
     {
         public static string ImageModel2 = "dall-e-2";
         public static string ImageModel3 = "dall-e-3";
-        public static string BlobPrefix = "";//"-- Search Key --";
-        public static string BlobConn = "";//"-- Search Key --";
-        public static string ContainerName = "gambar";//"-- Search Key --";
+        public static string BlobPrefix = "";
+        public static string BlobConn = "";
+        public static string ContainerName = "gambar";
 
         public static bool InternetOK {set;get;}
 
@@ -27,12 +27,12 @@ namespace LLMP.Desktop.Data
         public static string EmbeddingModel = "text-embedding-ada-002";
      
         public const string GemLic = "";
-        public static string GoogleSearchKey = "";//"-- Search Key --";
-        public static string GoogleSearchID = "";//"-- Search Key --";
+        public static string GoogleSearchKey = "";
+        public static string GoogleSearchID = "";
         public static string OpenAIKey { get; set; }
         public static string OpenAIOrg { get; set; }
         public static string PalmKey { get; set; }
-        public static List<string> ModelOpenAIs = new List<string> { "gpt-3.5-turbo-0125", "gpt-4-0125-preview", "gpt-4-vision-preview", "gemini-pro" };        //"chat-bison-001"
+        public static List<string> ModelOpenAIs = new List<string> { "gpt-3.5-turbo-0125", "gpt-4-0125-preview", "gpt-4-vision-preview", "gemini-pro", "gemini-pro-vision" };        //"chat-bison-001"
 
     }
 }
