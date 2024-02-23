@@ -24,6 +24,12 @@ namespace LLMP.Desktop
             AppConstants.OpenAIOrg = ConfigurationManager.AppSettings["OpenAIOrg"];
             AppConstants.PalmKey = ConfigurationManager.AppSettings["PalmKey"];
 
+            AppConstants.BlobPrefix = ConfigurationManager.AppSettings["BlobPrefix"];
+            AppConstants.BlobConn = ConfigurationManager.AppSettings["BlobConn"];
+            AppConstants.ContainerName = ConfigurationManager.AppSettings["ContainerName"];
+            AppConstants.GoogleSearchKey = ConfigurationManager.AppSettings["GoogleSearchKey"];
+            AppConstants.GoogleSearchID = ConfigurationManager.AppSettings["GoogleSearchID"];
+
 
 
         }
