@@ -10,12 +10,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using Connectors.AI.PaLM;
 using Connectors.AI.PaLM.TextCompletion;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.AI.PaLM.TextCompletion;
 using Microsoft.SemanticKernel.Http;
 using Microsoft.SemanticKernel.Services;
 using Microsoft.SemanticKernel.TextGeneration;
 
-namespace Microsoft.SemanticKernel.Connectors.PaLM;
+namespace Connectors.AI.PaLM;
 
 /// <summary>
 /// PaLM text generation service.

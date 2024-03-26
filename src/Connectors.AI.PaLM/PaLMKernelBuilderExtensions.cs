@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AI.PaLM.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.AI.PaLM.TextCompletion;
-using Microsoft.SemanticKernel.Connectors.PaLM;
-using Microsoft.SemanticKernel.Connectors.PaLM;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.TextGeneration;
 

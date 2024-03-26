@@ -41,7 +41,10 @@
             </MudBadge>
         }
         <MudPaper Class="pa-4">
-            @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result))
+           @*  @((MarkupString)HtmlHelper.ConvertToHtmlUsingConcatenation(Result)) *@
+           <MudTextField Lines="10" @bind-Value="Result">
+
+           </MudTextField>
         </MudPaper>
     </MudItem>
 </MudGrid>
@@ -65,7 +68,7 @@
     string Prompt { set; get; } = "I want to go to ";
     protected override async Task OnInitializedAsync()
     { 
-        await Reset();
+        await ChatSvc.Setup();
     }
 
     public async Task PickMedia()
@@ -119,11 +122,20 @@
     }
     async Task Reset()
     {
-        await ChatSvc.Setup();
+        var result = await ChatSvc.Reset();
         Prompt = string.Empty;
         Result = string.Empty;
-        infos.Add($"{DateTime.Now} - Chat is ready.");
-        Snackbar.Add($"{DateTime.Now} - Chat is ready.", Severity.Info);
+        if (!result)
+        {
+            infos.Add($"{DateTime.Now} - Reset Index is Failed.");
+            Snackbar.Add($"{DateTime.Now} -Reset Index is Failed.", Severity.Warning);
+        }
+        else
+        {
+            infos.Add($"{DateTime.Now} - Chat is ready.");
+            Snackbar.Add($"{DateTime.Now} - Chat is ready.", Severity.Info);
+
+        }
     }
 
     private async Task OnKeyUpAsync(KeyboardEventArgs args)

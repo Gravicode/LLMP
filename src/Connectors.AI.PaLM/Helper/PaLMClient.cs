@@ -65,26 +65,33 @@ namespace Connectors.AI.PaLM.Helper
         {
             try
             {
+                
                 OpenAIPromptExecutionSettings oaisetting = OpenAIPromptExecutionSettings.FromExecutionSettings(settings);
                 var context = history.Where(x => x.Role == AuthorRole.System).FirstOrDefault();
                 var hist = new List<ContentChat>();
-                history.ToList().ForEach(async x => {
+                foreach(var x in history)
                     if (x.Role != AuthorRole.System)
                     {
-                        InlineData inlinedata = null;
-                        if(x.Items.Any(x=>x is ImageContent))
+                        if(x.Items != null && x.Items.Any(x=>x is ImageContent))
                         {
                             var imgContent = x.Items.Where(x => x is ImageContent).FirstOrDefault() as ImageContent;
-                            var url = imgContent.Uri.ToString();
-                            var mime = $"image/{Path.GetExtension(url).Replace(".","")}";
-                            var bytes = await Client.GetByteArrayAsync(url);                            
+                            var urlImg = imgContent.Uri.ToString();
+                            var mime = $"image/{Path.GetExtension(urlImg).Replace(".","")}";
+                            var bytes = await Client.GetByteArrayAsync(urlImg);                            
                             string base64img = Convert.ToBase64String(bytes);
-                            inlinedata = new InlineData() { mime_type = mime, data = base64img };
-                            
+                            var inlinedata = new InlineData() { mime_type = mime, data = base64img };
+                            var text = string.Empty;
+                            if(x.Items.Any(x => x is TextContent))
+                            {
+                                var textContent = x.Items.Where(x => x is TextContent).FirstOrDefault() as TextContent;
+                                text = textContent.Text;
+                            }
+
+                            hist.Add(new ContentChat() { role = x.Role == AuthorRole.Assistant ? "model" : "user", parts = new PartContent[] { new PartContent() { text = text, inline_data = inlinedata } } });
                         }
-                        hist.Add(new ContentChat() { role = x.Role == AuthorRole.Assistant ? "model" : "user", parts = new PartContent[] { new PartContent() { text = x.Content, inline_data = inlinedata ?? new() } } });
+                        else
+                            hist.Add(new ContentChat() { role = x.Role == AuthorRole.Assistant ? "model" : "user", parts = new PartContent[] { new PartContent() { text = x.Content, inline_data = null } } });
                     } 
-                });
                 var json = new RequestPaLMChat() { contents = hist.ToArray(), generationConfig = new Generationconfig() { temperature = (float)oaisetting.Temperature, topP = (float)oaisetting.TopP, topK = 1, maxOutputTokens = oaisetting.MaxTokens.Value, stopSequences = (oaisetting.StopSequences == null ? new string[0] : oaisetting.StopSequences.ToArray()) } };
                 var url = ServiceUrl.Replace("[$MODEL]", this.Model).Replace("[$API_KEY]", this.ApiKey);
                 var res = await Client.PostAsync(url, new StringContent(JsonSerializer.Serialize(json), System.Text.Encoding.UTF8, "application/json"), cancellationToken);

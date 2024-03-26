@@ -29,6 +29,10 @@ namespace LLMP.Desktop.Data
         public const string GemLic = "";
         public static string GoogleSearchKey = "";
         public static string GoogleSearchID = "";
+        public static string AzureSearchApiKey { get; set; }
+        public static string AzureSearchEndpoint { get; set; }
+        public static string AzureFormApiKey { get; set; }
+        public static string AzureFormEndpoint { get; set; }
         public static string OpenAIKey { get; set; }
         public static string OpenAIOrg { get; set; }
         public static string PalmKey { get; set; }

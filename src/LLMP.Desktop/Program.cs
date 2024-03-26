@@ -29,6 +29,10 @@ namespace LLMP.Desktop
             AppConstants.ContainerName = ConfigurationManager.AppSettings["ContainerName"];
             AppConstants.GoogleSearchKey = ConfigurationManager.AppSettings["GoogleSearchKey"];
             AppConstants.GoogleSearchID = ConfigurationManager.AppSettings["GoogleSearchID"];
+            AppConstants.AzureSearchApiKey = ConfigurationManager.AppSettings["AzureSearchApiKey"];
+            AppConstants.AzureSearchEndpoint = ConfigurationManager.AppSettings["AzureSearchEndpoint"];
+            AppConstants.AzureFormApiKey = ConfigurationManager.AppSettings["AzureFormApiKey"];
+            AppConstants.AzureFormEndpoint = ConfigurationManager.AppSettings["AzureFormEndpoint"];
 
 
 

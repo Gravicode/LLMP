@@ -10,12 +10,13 @@ using System.Threading.Tasks;
 using Connectors.AI.PaLM;
 using Connectors.AI.PaLM.Helper;
 using Connectors.AI.PaLM.TextEmbedding;
+using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.Connectors.AI.PaLM.TextEmbedding;
 using Microsoft.SemanticKernel.Embeddings;
 using Microsoft.SemanticKernel.Http;
 using Microsoft.SemanticKernel.Services;
 
-namespace Microsoft.SemanticKernel.Connectors.PaLM;
+namespace Connectors.AI.PaLM;
 
 /// <summary>
 /// PaLM embedding generation service.
