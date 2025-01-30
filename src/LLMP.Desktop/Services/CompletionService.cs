@@ -1,5 +1,6 @@
 ﻿using LLMP.Desktop.Data;
 using Microsoft.SemanticKernel;
+using Microsoft.SemanticKernel.ChatCompletion;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using System;
 using System.Collections.Generic;
@@ -41,11 +42,27 @@ namespace LLMP.Desktop.Services
             this.SelectedModel = ModelId;
             if (this.SelectedModel.Contains("bison") || this.SelectedModel.Contains("gecko") || ModelId.Contains("gemini") || ModelId.Contains("embedding"))
             {
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
                 kernel = Kernel.CreateBuilder()
-               .AddPaLMChatCompletion(
+               .AddGoogleAIGeminiChatCompletion(
                    modelId: ModelId,
                    apiKey: AppConstants.PalmKey)
                .Build();
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+            }
+            else if (ModelId.Contains("deepseek", StringComparison.InvariantCultureIgnoreCase))
+            {
+                //open ai
+#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                kernel = Kernel.CreateBuilder()
+              .AddAzureAIInferenceChatCompletion(
+                  modelId: AppConstants.ModelAzureAIs.First(),
+                  apiKey: AppConstants.AzureAIKey,
+                  endpoint: new Uri(AppConstants.AzureAIEndpoint))
+              .Build();
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             }
             else
             {

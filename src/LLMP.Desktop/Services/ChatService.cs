@@ -1,14 +1,11 @@
 ﻿using LLMP.Desktop.Data;
 using LLMP.Models;
+using Azure.AI.Inference;
+//using Microsoft.Extensions.AI;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.AI.PaLM.ChatCompletion;
+using Microsoft.SemanticKernel.Connectors.Google;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LLMP.Desktop.Services
 {
@@ -38,12 +35,21 @@ namespace LLMP.Desktop.Services
             if (ModelId.Contains("bison") || ModelId.Contains("gecko") || ModelId.Contains("gemini") || ModelId.Contains("embedding"))
             {
                 //palm
-                chatCompletionService = new PaLMChatCompletion(ModelId, AppConstants.PalmKey);
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                chatCompletionService = new GoogleAIGeminiChatCompletionService(ModelId, AppConstants.PalmKey);
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+            }
+            else if (ModelId.Contains("deepseek",StringComparison.InvariantCultureIgnoreCase))
+            {
+                //open ai
+#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                chatCompletionService = new Microsoft.Extensions.AI.AzureAIInferenceChatClient(new Azure.AI.Inference.ChatCompletionsClient(new Uri(AppConstants.AzureAIEndpoint),new Azure.AzureKeyCredential(AppConstants.AzureAIKey)),modelId: AppConstants.ModelAzureAIs.First()).AsChatCompletionService();
+#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             }
             else
             {
                 //open ai
-                chatCompletionService = new OpenAIChatCompletionService(ModelId, AppConstants.OpenAIKey);
+                chatCompletionService = new OpenAIChatCompletionService(modelId: ModelId, openAIClient: new OpenAI.OpenAIClient(AppConstants.OpenAIKey));
             }
 
             chatHistory = new ChatHistory(this.SystemMessage);
@@ -60,7 +66,9 @@ namespace LLMP.Desktop.Services
             if (ModelId.Contains("bison") || ModelId.Contains("gecko") || ModelId.Contains("gemini") || ModelId.Contains("embedding"))
             {
                 //palm
-                chatCompletionService = new PaLMChatCompletion(ModelId, AppConstants.PalmKey);
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                chatCompletionService = new GoogleAIGeminiChatCompletionService(ModelId, AppConstants.PalmKey);
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             }
             else
             {

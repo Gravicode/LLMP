@@ -9,9 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMP.Tools", "LLMP.Tools\LL
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LLMP.Models", "LLMP.Models\LLMP.Models.csproj", "{69C8E2FF-8858-4804-A992-D17E0E3BB59D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Connectors.AI.PaLM", "Connectors.AI.PaLM\Connectors.AI.PaLM.csproj", "{04268A25-B0D6-4F61-85E9-78DE1C50C602}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libs", "Libs", "{3E7F26CE-EA5E-43E2-AC16-072AC0B589F7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AA73662F-486E-4182-BF79-391238076A40}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +34,6 @@ Global
 		{69C8E2FF-8858-4804-A992-D17E0E3BB59D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69C8E2FF-8858-4804-A992-D17E0E3BB59D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69C8E2FF-8858-4804-A992-D17E0E3BB59D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{04268A25-B0D6-4F61-85E9-78DE1C50C602}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{04268A25-B0D6-4F61-85E9-78DE1C50C602}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{04268A25-B0D6-4F61-85E9-78DE1C50C602}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{04268A25-B0D6-4F61-85E9-78DE1C50C602}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -42,7 +41,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{060DF2B9-C26A-49C5-BFF9-54A6DB977570} = {3E7F26CE-EA5E-43E2-AC16-072AC0B589F7}
 		{69C8E2FF-8858-4804-A992-D17E0E3BB59D} = {3E7F26CE-EA5E-43E2-AC16-072AC0B589F7}
-		{04268A25-B0D6-4F61-85E9-78DE1C50C602} = {3E7F26CE-EA5E-43E2-AC16-072AC0B589F7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {2A406235-F817-4B0D-9ADF-75D1E5A1DA39}

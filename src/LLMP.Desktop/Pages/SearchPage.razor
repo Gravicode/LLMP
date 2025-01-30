@@ -14,9 +14,9 @@
                         <MudSelectItem Value="@model" />
                     }
                 </MudSelect>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.Temperature" Min="0" Max="2" Step="0.1">Temperature</MudSlider>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
+                <MudSlider ValueLabel="true" T="double" @bind-NullableValue="@ChatSvc.Setting.Temperature" Min="0" Max="2" Step="0.1">Temperature</MudSlider>
+                <MudSlider ValueLabel="true" T="double" @bind-NullableValue="@ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
+                <MudSlider ValueLabel="true" T="int" @bind-NullableValue="@ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
                 <MudTextField T="string" Lines="5" @bind-Text="Prompt" Label="Your Search Prompt" Required="true" RequiredError="Prompt is required!" />
 
             </MudForm>

@@ -9,7 +9,7 @@
 
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
 
     async Task Submit() {
         await OnClick.InvokeAsync(true);

@@ -16,9 +16,9 @@
                         <MudSelectItem Value="@model" />
                     }
                 </MudSelect>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.Temperature" Min="0" Max="2" Step="0.1">Temperature</MudSlider>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
-                <MudSlider ValueLabel="true" @bind-Value="@ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
+                <MudSlider ValueLabel="true" T="double" @bind-NullableValue="ChatSvc.Setting.Temperature" Min="0" Max="2" Step="0.1">Temperature</MudSlider>
+                <MudSlider ValueLabel="true" T="double" @bind-NullableValue="ChatSvc.Setting.TopP" Min="0" Step="0.1" Max="1">Top-P</MudSlider>
+                <MudSlider ValueLabel="true" T="int" @bind-NullableValue="ChatSvc.Setting.MaxTokens" Min="1" Max="4096">Max Token</MudSlider>
             </MudForm>
         </MudPaper>
         <MudPaper Class="pa-4 mt-4">
@@ -79,7 +79,7 @@
                                                                 var icon = citation.Source.EndsWith(".pdf")
                                                                 ? @Icons.Custom.FileFormats.FilePdf
                                                                 : null;
-                                                                <MudChip Variant="Variant.Text" Color="Color.Info"
+                                                                <MudChip T="string" Variant="Variant.Text" Color="Color.Info"
                                                              Icon="@icon" OnClick="@(_ => OnShowCitation(citation.Link))">
                                                                     @citation.Source
                                                                 </MudChip>

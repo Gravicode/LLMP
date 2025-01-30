@@ -1,8 +1,10 @@
-﻿using LLMP.Desktop.Data;
+﻿using Betalgo.Ranul.OpenAI.Managers;
+using Betalgo.Ranul.OpenAI;
+using LLMP.Desktop.Data;
 using LLMP.Models;
-using OpenAI.Interfaces;
-using OpenAI.ObjectModels;
-using OpenAI.ObjectModels.RequestModels;
+using Betalgo.Ranul.OpenAI.ObjectModels;
+using Betalgo.Ranul.OpenAI.ObjectModels.RequestModels;
+using Betalgo.Ranul.OpenAI.Interfaces;
 
 namespace LLMP.Desktop.Services
 {
@@ -23,9 +25,13 @@ namespace LLMP.Desktop.Services
         /// <param name="organization">OpenAI organization id. This is usually optional unless your account belongs to multiple organizations.</param>
         /// <param name="handlerFactory">Retry handler</param>
         /// <param name="log">Logger</param>
-        public ImageGeneratorService(IOpenAIService service)
+        public ImageGeneratorService()//IOpenAIService service)
         {
-            this.openAiService = service;
+            var openAIService = new OpenAIService(new OpenAIOptions()
+            {
+                ApiKey = AppConstants.OpenAIKey
+            });
+            this.openAiService = openAIService;
         }
 
         public async Task<(string Message, List<ImageModel> Result)> GenerateImageAsync(string Prompt, int NumImages, string ImageSize, string ModelId, string Style = ImageStyles.Natural, CancellationToken cancellationToken = default)

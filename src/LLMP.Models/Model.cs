@@ -12,8 +12,8 @@ namespace LLMP.Models
     }
     public class AISetting
     {
-        public double Temperature { set; get; }
-        public double TopP { set; get; }
+        public double? Temperature { set; get; }
+        public double? TopP { set; get; }
         public int? MaxToken { set; get; }
     }
     public class CompletionData

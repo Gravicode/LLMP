@@ -1,13 +1,9 @@
 using LLMP.Desktop.Data;
-using LLMP.Desktop.Pages;
 using LLMP.Desktop.Services;
-using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
-using static System.Windows.Forms.AxHost;
 using WaterPositive.Kiosk.Helpers;
-using Microsoft.Identity.Client.NativeInterop;
-using OpenAI.Extensions;
+using Microsoft.AspNetCore.Components.WebView.WindowsForms;
 namespace LLMP.Desktop
 {
     public partial class Form1 : Form
@@ -20,7 +16,7 @@ namespace LLMP.Desktop
             this.Text = "LLM Playground v0.1";
             var services = new ServiceCollection();
             services.AddWindowsFormsBlazorWebView();
-            services.AddOpenAIService(settings => { settings.ApiKey = AppConstants.OpenAIKey; settings.Organization = AppConstants.OpenAIOrg; });
+            //services.AddOpenAIService(settings => { settings.ApiKey = AppConstants.OpenAIKey; settings.Organization = AppConstants.OpenAIOrg; });
 
             services.AddSingleton<ChatService>();
             services.AddSingleton<CompletionService>();
@@ -33,7 +29,7 @@ namespace LLMP.Desktop
             services.AddSingleton<AzureBlobHelper>();
             blazorWebView1.HostPage = "wwwroot\\index.html";
             blazorWebView1.Services = services.BuildServiceProvider();
-            blazorWebView1.RootComponents.Add<App>("#app");
+            blazorWebView1.RootComponents.Add<LLMP.Desktop.App>("#app");
             state = blazorWebView1.Services.GetService<AppState>();
             CheckInternet();
             SyncTimer = new System.Timers.Timer(10000);

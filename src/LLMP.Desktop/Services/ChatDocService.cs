@@ -82,6 +82,7 @@ namespace LLMP.Desktop.Services
         }
         public async Task Setup()
         {
+            
             //var azureOpenAITextConfig = new AzureOpenAIConfig() { APIKey = AppConstants.OpenAIKey, Auth = AzureOpenAIConfig.AuthTypes.APIKey };
             //var azureOpenAIEmbeddingConfig = new AzureOpenAIConfig() { APIKey = AppConstants.OpenAIKey, Deployment = AppConstants.EmbeddingModel };
             var recognizerConfig = new AzureAIDocIntelConfig() { APIKey = AppConstants.AzureFormApiKey, Auth= AzureAIDocIntelConfig.AuthTypes.APIKey, Endpoint = AppConstants.AzureFormEndpoint };
@@ -91,8 +92,8 @@ namespace LLMP.Desktop.Services
     //.WithAzureOpenAITextGeneration(azureOpenAITextConfig, new DefaultGPTTokenizer())
     //.WithAzureOpenAITextEmbeddingGeneration(azureOpenAIEmbeddingConfig, new DefaultGPTTokenizer())
     .WithAzureAIDocIntel(recognizerConfig)
-    .WithAzureAISearchMemoryDb(searchConfig)
-    .Build<MemoryServerless>();
+    .WithAzureAISearchMemoryDb(searchConfig)    
+    .Build<MemoryServerless>(new KernelMemoryBuilderBuildOptions() { AllowMixingVolatileAndPersistentData = true });
             HasDoc = true;
             IsReady = true;
 

@@ -46,10 +46,10 @@
                     </MudTable>
 
                     <div class="d-flex flex-wrap mt-4">
-                        <MudSwitch @bind-Checked="@hover" Color="Color.Primary">Hover</MudSwitch>
-                        <MudSwitch @bind-Checked="@dense" Color="Color.Secondary">Dense</MudSwitch>
-                        <MudSwitch @bind-Checked="@striped" Color="Color.Tertiary">Striped</MudSwitch>
-                        <MudSwitch @bind-Checked="@bordered" Color="Color.Warning">Bordered</MudSwitch>
+                        <MudSwitch T="bool" @bind-Checked="@hover" Color="Color.Primary">Hover</MudSwitch>
+                        <MudSwitch T="bool" @bind-Checked="@dense" Color="Color.Secondary">Dense</MudSwitch>
+                        <MudSwitch T="bool" @bind-Checked="@striped" Color="Color.Tertiary">Striped</MudSwitch>
+                        <MudSwitch T="bool" @bind-Checked="@bordered" Color="Color.Warning">Bordered</MudSwitch>
                     </div>
                 }
             </MudItem>
@@ -87,7 +87,7 @@
     }
     #endregion
 
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] IMudDialogInstance MudDialog { get; set; }
 
     async Task Close()
     {

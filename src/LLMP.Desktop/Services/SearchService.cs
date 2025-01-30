@@ -3,16 +3,12 @@ using Microsoft.SemanticKernel.Plugins.Web;
 using Microsoft.SemanticKernel.Connectors.OpenAI;
 using Microsoft.SemanticKernel.Plugins.Web.Google;
 using LLMP.Desktop.Data;
-using DocumentFormat.OpenXml.EMMA;
-using Microsoft.AspNetCore.DataProtection.KeyManagement;
-using DocumentFormat.OpenXml.Office2019.Drawing.Model3D;
-using Microsoft.SemanticKernel.ChatCompletion;
-using Microsoft.SemanticKernel.Connectors.AI.PaLM.ChatCompletion;
 
 
 
 namespace LLMP.Desktop.Services
 {
+
     public class SearchService
     {
         public OpenAIPromptExecutionSettings Setting { set; get; }
@@ -41,9 +37,25 @@ namespace LLMP.Desktop.Services
             if (SelectedModel.Contains("bison") || SelectedModel.Contains("gecko") || SelectedModel.Contains("gemini") || SelectedModel.Contains("embedding"))
             {
                 //palm
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
                 kernel = Kernel.CreateBuilder()
-            .AddPaLMChatCompletion(modelId: SelectedModel, apiKey: AppConstants.PalmKey, serviceId: "davinci")
+            .AddGoogleAIGeminiChatCompletion(modelId: SelectedModel, apiKey: AppConstants.PalmKey, serviceId: "davinci")
        .Build();
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+            }
+            else if (SelectedModel.Contains("deepseek", StringComparison.InvariantCultureIgnoreCase))
+            {
+                //open ai
+#pragma warning disable SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning disable SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+                kernel = Kernel.CreateBuilder()
+              .AddAzureAIInferenceChatCompletion(
+                  modelId: AppConstants.ModelAzureAIs.First(),
+                  apiKey: AppConstants.AzureAIKey,
+                  endpoint: new Uri(AppConstants.AzureAIEndpoint))
+              .Build();
+#pragma warning restore SKEXP0070 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
+#pragma warning restore SKEXP0001 // Type is for evaluation purposes only and is subject to change or removal in future updates. Suppress this diagnostic to proceed.
             }
             else
             {

@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
-		<TargetFramework>net8.0-windows</TargetFramework>
+		<TargetFramework>net9.0-windows7.0</TargetFramework>
 		<Nullable>enable</Nullable>
 		<UseWindowsForms>true</UseWindowsForms>
 		<ImplicitUsings>enable</ImplicitUsings>
@@ -14,28 +14,34 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Betalgo.OpenAI" Version="7.4.4" />
+		<!--<PackageReference Include="Betalgo.OpenAI" Version="8.7.2" />-->
+		<PackageReference Include="Betalgo.Ranul.OpenAI" Version="9.0.1" />
+		<PackageReference Include="Microsoft.KernelMemory.AI.OpenAI" Version="0.96.250120.1" />
+		<PackageReference Include="Microsoft.KernelMemory.DataFormats.AzureAIDocIntel" Version="0.96.250120.1" />
+		<PackageReference Include="Microsoft.KernelMemory.MemoryDb.AzureAISearch" Version="0.96.250120.1" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.AzureAIInference" Version="1.35.0-beta" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.35.0-alpha" />
 		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Memory" Version="1.4.0-alpha" />
 		<PackageReference Include="Microsoft.SemanticKernel.Plugins.Web" Version="1.4.0-alpha" />
 		<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-		<PackageReference Include="SkiaSharp" Version="2.88.7" />
-		<PackageReference Include="Azure.Storage.Blobs" Version="12.19.1" />
-		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="8.0.7" />
-		<PackageReference Include="Microsoft.KernelMemory.Core" Version="0.28.240212.1" />
-		<PackageReference Include="Microsoft.KernelMemory.SemanticKernelPlugin" Version="0.28.240212.1" />
-		<PackageReference Include="Microsoft.SemanticKernel" Version="1.4.0" />
-		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.4.0" />
-		<PackageReference Include="MudBlazor" Version="6.16.0" />
+		<PackageReference Include="OpenAI" Version="2.1.0-beta.2" />
+		<PackageReference Include="SkiaSharp" Version="3.116.1" />
+		<PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
+		<PackageReference Include="Microsoft.AspNetCore.Components.WebView.WindowsForms" Version="9.0.30" />
+		<PackageReference Include="Microsoft.KernelMemory.Core" Version="0.96.250120.1" />
+		<PackageReference Include="Microsoft.KernelMemory.SemanticKernelPlugin" Version="0.96.250120.1" />
+		<PackageReference Include="Microsoft.SemanticKernel" Version="1.35.0" />
+		<PackageReference Include="Microsoft.SemanticKernel.Connectors.OpenAI" Version="1.35.0" />
+		<PackageReference Include="MudBlazor" Version="8.1.0" />
 		<PackageReference Include="ESC-POS-USB-NET" Version="1.1.3" />
-		<PackageReference Include="Blazored.Toast" Version="4.1.0" />
-		<PackageReference Include="System.ServiceModel.Primitives" Version="8.0.0" />
-		<PackageReference Include="System.Text.Json" Version="8.0.1" />
-		<PackageReference Include="ZXing.Net" Version="0.16.9" />
-		<PackageReference Include="ZXingBlazor" Version="1.1.4" />
+		<PackageReference Include="Blazored.Toast" Version="4.2.1" />
+		<PackageReference Include="System.ServiceModel.Primitives" Version="8.1.1" />
+		<PackageReference Include="System.Text.Json" Version="9.0.1" />
+		<PackageReference Include="ZXing.Net" Version="0.16.10" />
+		<PackageReference Include="ZXingBlazor" Version="1.1.5" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Connectors.AI.PaLM\Connectors.AI.PaLM.csproj" />
 	  <ProjectReference Include="..\LLMP.Models\LLMP.Models.csproj" />
 	  <ProjectReference Include="..\LLMP.Tools\LLMP.Tools.csproj" />
 	</ItemGroup>

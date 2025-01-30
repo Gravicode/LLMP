@@ -33,6 +33,8 @@ namespace LLMP.Desktop
             AppConstants.AzureSearchEndpoint = ConfigurationManager.AppSettings["AzureSearchEndpoint"];
             AppConstants.AzureFormApiKey = ConfigurationManager.AppSettings["AzureFormApiKey"];
             AppConstants.AzureFormEndpoint = ConfigurationManager.AppSettings["AzureFormEndpoint"];
+            AppConstants.AzureAIKey = ConfigurationManager.AppSettings["AzureAIKey"];
+            AppConstants.AzureAIEndpoint = ConfigurationManager.AppSettings["AzureAIEndpoint"];
 
 
 
